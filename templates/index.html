@@ -1,57 +1,85 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تشغيل ملفات Python</title>
+  <meta charset="UTF-8" />
+  <title>تشغيل ملفات بايثون</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #4facfe, #00f2fe);
-      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #6a11cb, #2575fc);
+      color: #fff;
       padding: 40px;
       text-align: center;
     }
-    .box {
-      background: white;
-      padding: 30px;
+    .container {
+      background: rgba(0,0,0,0.6);
       border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-      display: inline-block;
       max-width: 600px;
-      width: 100%;
+      margin: auto;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
     }
-    input[type="file"], button {
+    input[type="file"], button, input[type="text"] {
+      width: 100%;
       padding: 12px;
-      margin: 10px;
-      font-size: 16px;
+      margin: 12px 0;
       border-radius: 8px;
-      border: 1px solid #ccc;
+      border: none;
+      font-size: 16px;
+    }
+    input[type="file"] {
+      background: #444;
+      color: #fff;
+    }
+    input[type="text"] {
+      direction: ltr;
+      text-align: left;
     }
     button {
-      background-color: #4facfe;
-      color: white;
+      background-color: #00d4ff;
+      color: #000;
+      font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: none;
     }
     button:hover {
-      background-color: #00c3ff;
+      background-color: #00a0cc;
+      color: #fff;
     }
     pre {
-      background: #f4f4f4;
+      background: #111;
       padding: 15px;
-      text-align: left;
-      white-space: pre-wrap;
       border-radius: 10px;
-      margin-top: 20px;
-      max-height: 400px;
+      max-height: 300px;
       overflow-y: auto;
+      text-align: right;
+      white-space: pre-wrap;
+      margin-top: 20px;
+      color: #0f0;
+    }
+    .scope-info {
+      margin-bottom: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #ffeb3b;
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>تشغيل ملفات Python أونلاين</h2>
-    <input type="file" id="fileInput" accept=".py">
+  <div class="container">
+    <div class="scope-info">النطاق الخاص بك: {{ scope }}</div>
+
+    <h2>تشغيل ملفات بايثون أونلاين</h2>
+
+    <input type="file" id="fileInput" accept=".py" />
     <button onclick="uploadAndRun()">تشغيل الملف</button>
+
+    <hr />
+
+    <input type="text" id="libName" placeholder="اكتب اسم المكتبة لتثبيتها مثل requests" />
+    <button onclick="installLibrary()">تثبيت المكتبة</button>
+
     <pre id="output">النتيجة ستظهر هنا...</pre>
   </div>
 
@@ -61,7 +89,7 @@
       const output = document.getElementById('output');
 
       if (fileInput.files.length === 0) {
-        output.textContent = "⚠️ يرجى اختيار ملف Python أولاً.";
+        output.textContent = "⚠️ يرجى اختيار ملف بايثون أولاً.";
         return;
       }
 
@@ -77,6 +105,30 @@
         });
         const result = await response.json();
         output.textContent = result.output;
+      } catch (error) {
+        output.textContent = "❌ حدث خطأ أثناء الاتصال بالخادم.";
+      }
+    }
+
+    async function installLibrary() {
+      const libName = document.getElementById('libName').value.trim();
+      const output = document.getElementById('output');
+
+      if (!libName) {
+        output.textContent = "⚠️ يرجى كتابة اسم المكتبة.";
+        return;
+      }
+
+      output.textContent = `⏳ جاري تثبيت المكتبة "${libName}"...`;
+
+      try {
+        const response = await fetch("/install_library", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ library: libName })
+        });
+        const result = await response.json();
+        output.textContent = result.message;
       } catch (error) {
         output.textContent = "❌ حدث خطأ أثناء الاتصال بالخادم.";
       }
