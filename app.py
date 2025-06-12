@@ -73,7 +73,7 @@ def run_python():
     try:
         proc = subprocess.run([python_path, code_path],
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              timeout=15, text=True)
+                              timeout=1000, text=True)
         output = proc.stdout + proc.stderr
     except subprocess.TimeoutExpired:
         output = "انتهى الوقت المحدد لتنفيذ البرنامج."
