@@ -2,20 +2,20 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>بوت بايثون مباشر</title>
+  <title>تشغيل ملفات Python</title>
   <style>
-    body { font-family: Arial; background: #111; color: #0f0; padding: 30px; }
-    textarea, input { width: 100%; padding: 10px; background: #222; color: #0f0; border: 1px solid #0f0; margin-bottom: 10px; }
-    button { padding: 10px 20px; background: #0f0; color: #000; border: none; }
+    body { background: #111; color: #0f0; font-family: Arial; padding: 30px; }
+    input, button, textarea { width: 100%; padding: 10px; background: #222; color: #0f0; border: 1px solid #0f0; margin-bottom: 10px; }
+    button { background: #0f0; color: #000; }
     pre { background: #000; padding: 20px; border: 1px solid #0f0; }
   </style>
 </head>
 <body>
-  <h1>بوت بايثون مباشر</h1>
+  <h1>🔧 رفع وتشغيل ملفات Python</h1>
 
-  <form action="/run" method="POST">
-    <textarea name="code" rows="10" placeholder="اكتب كود بايثون هنا">{{ code if code else '' }}</textarea>
-    <button type="submit">تشغيل الكود</button>
+  <form action="/run" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".py" required />
+    <button type="submit">تشغيل الملف</button>
   </form>
 
   {% if output %}
@@ -24,12 +24,12 @@
   {% endif %}
 
   <form action="/install" method="POST">
-    <input type="text" name="package" placeholder="اكتب اسم المكتبة مثل requests" />
+    <input type="text" name="package" placeholder="اكتب اسم المكتبة للتثبيت مثل requests" />
     <button type="submit">تثبيت مكتبة</button>
   </form>
 
   {% if install_output %}
-    <h2>ناتج التثبيت:</h2>
+    <h2>نتيجة التثبيت:</h2>
     <pre>{{ install_output }}</pre>
   {% endif %}
 </body>
