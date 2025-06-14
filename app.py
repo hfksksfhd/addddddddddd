@@ -1,7 +1,10 @@
 from flask import Flask, request, render_template
 import subprocess
+import os
 
 app = Flask(__name__)
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 @app.route('/')
 def home():
@@ -9,20 +12,23 @@ def home():
 
 @app.route('/run', methods=['POST'])
 def run():
-    code = request.form['code']
-    with open("user_code.py", "w", encoding="utf-8") as f:
-        f.write(code)
-    try:
-        result = subprocess.run(
-            ['python', 'user_code.py'],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        output = result.stdout + result.stderr
-    except Exception as e:
-        output = str(e)
-    return render_template('index.html', output=output, code=code)
+    uploaded_file = request.files['file']
+    if uploaded_file.filename.endswith('.py'):
+        filepath = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
+        uploaded_file.save(filepath)
+        try:
+            result = subprocess.run(
+                ['python', filepath],
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            output = result.stdout + result.stderr
+        except Exception as e:
+            output = str(e)
+    else:
+        output = "الملف غير صالح. فقط ملفات .py مدعومة."
+    return render_template('index.html', output=output)
 
 @app.route('/install', methods=['POST'])
 def install():
